@@ -1,0 +1,16 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{28CF91FA-4694-5D01-0F45-BEBF8BE02446}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "Defender",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
+	]
+}
