@@ -19,4 +19,6 @@ public:
 	void Jump();
 	void MainAction();
 	void SecondaryAction();
+	void StartCrouch();
+	void EndCrouch();
 };

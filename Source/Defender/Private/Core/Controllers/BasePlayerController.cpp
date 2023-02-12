@@ -1,5 +1,6 @@
 #include "Core/Controllers/BasePlayerController.h"
 
+#include "Core/Character/BaseCharacter.h"
 #include "GameFramework/Character.h"
 
 void ABasePlayerController::MoveForward(float Value)
@@ -40,7 +41,7 @@ void ABasePlayerController::LookUp(float Value)
 
 void ABasePlayerController::Jump()
 {
-	ACharacter* CurrentCharacter = GetCharacter();
+	ABaseCharacter* CurrentCharacter = Cast<ABaseCharacter>(GetCharacter());
 	if (CurrentCharacter)
 	{
 		CurrentCharacter->Jump();
@@ -62,5 +63,23 @@ void ABasePlayerController::SecondaryAction()
 	if (CurrentCharacter)
 	{
 		
+	}
+}
+
+void ABasePlayerController::StartCrouch()
+{
+	ACharacter* CurrentCharacter = GetCharacter();
+	if (CurrentCharacter)
+	{
+		CurrentCharacter->Crouch();
+	}
+}
+
+void ABasePlayerController::EndCrouch()
+{
+	ACharacter* CurrentCharacter = GetCharacter();
+	if (CurrentCharacter)
+	{
+		CurrentCharacter->UnCrouch();
 	}
 }
