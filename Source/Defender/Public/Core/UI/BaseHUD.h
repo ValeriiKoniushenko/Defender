@@ -7,22 +7,24 @@
 
 #include "BaseHUD.generated.h"
 
+class UCharacterHUDWidget;
 class UUserWidget;
 
 UCLASS()
 class DEFENDER_API ABaseHUD : public AHUD
 {
 	GENERATED_BODY()
+
 public:
 	virtual void BeginPlay() override;
-	
+
+	UUserWidget* CrosshairWidget;
+	UCharacterHUDWidget* CharacterHUDWidget;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=UI)
-	TArray<TSubclassOf<UUserWidget>> Widgets;
+	TSubclassOf<UUserWidget> CrosshairWidgetClass;
 
-private:
-	void CreateAllWidgets();
-	
-private:
-	TArray<UUserWidget*> CreatedWidgets;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=UI)
+	TSubclassOf<UCharacterHUDWidget> CharacterHUDWidgetClass;
 };

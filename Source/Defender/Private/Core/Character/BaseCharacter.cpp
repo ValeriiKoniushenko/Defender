@@ -1,9 +1,13 @@
 #include "Core/Character/BaseCharacter.h"
 
 #include "Camera/CameraComponent.h"
+#include "Components/ProgressBar.h"
 #include "Core/Controllers/BasePlayerController.h"
+#include "Core/UI/BaseHUD.h"
+#include "Core/UI/CharacterHUDWidget.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogBaseCharacter, All, All);
 
@@ -36,6 +40,15 @@ void ABaseCharacter::BeginPlay()
 	LoadFromDataTable();
 }
 
+void ABaseCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	ABaseHUD* HUD = UGameplayStatics::GetPlayerController(this, 0)->GetHUD<ABaseHUD>();
+	HUD->CharacterHUDWidget->HealthProgressBar->SetPercent(AttributeSet->Health.GetCurrentValue() / AttributeSet->Health.GetBaseValue());
+	HUD->CharacterHUDWidget->StaminaProgressBar->SetPercent(AttributeSet->Stamina.GetCurrentValue() / AttributeSet->Stamina.GetBaseValue());
+}
+
 float ABaseCharacter::GetSpeed() const
 {
 	return GetVelocity().Size2D();
@@ -60,24 +73,21 @@ void ABaseCharacter::LoadFromDataTable()
 		UE_LOG(LogBaseCharacter, Error, TEXT("ConfigTable is not initialized"));
 		return;
 	}
-	
+
 	for (auto Row : ConfigTable->GetRowMap())
 	{
 		const FAttributeMetaData* Data = reinterpret_cast<FAttributeMetaData*>(Row.Value);
 		if (Row.Key == "BaseCharacterAttributeSet.Health")
 		{
-			AttributeSet->InitHealth(Data->BaseValue);
+			AttributeSet->Health.SetBaseValue(Data->BaseValue);
+			AttributeSet->Health.SetCurrentValue(Data->BaseValue);
 		}
 		else if (Row.Key == "BaseCharacterAttributeSet.Stamina")
 		{
-			AttributeSet->InitStamina(Data->BaseValue);
+			AttributeSet->Stamina.SetBaseValue(Data->BaseValue);
+			AttributeSet->Stamina.SetCurrentValue(Data->BaseValue);
 		}
 	}
-}
-
-void ABaseCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
 
 void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
