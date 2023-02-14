@@ -40,6 +40,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void LoadFromDataTable();
+
+	UFUNCTION()
+	void UpdateStatusBar();
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")

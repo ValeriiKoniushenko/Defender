@@ -44,9 +44,7 @@ void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	ABaseHUD* HUD = UGameplayStatics::GetPlayerController(this, 0)->GetHUD<ABaseHUD>();
-	HUD->CharacterHUDWidget->HealthProgressBar->SetPercent(AttributeSet->Health.GetCurrentValue() / AttributeSet->Health.GetBaseValue());
-	HUD->CharacterHUDWidget->StaminaProgressBar->SetPercent(AttributeSet->Stamina.GetCurrentValue() / AttributeSet->Stamina.GetBaseValue());
+	UpdateStatusBar();
 }
 
 float ABaseCharacter::GetSpeed() const
@@ -88,6 +86,16 @@ void ABaseCharacter::LoadFromDataTable()
 			AttributeSet->Stamina.SetCurrentValue(Data->BaseValue);
 		}
 	}
+}
+
+void ABaseCharacter::UpdateStatusBar()
+{
+	ABaseHUD* HUD = UGameplayStatics::GetPlayerController(this, 0)->GetHUD<ABaseHUD>();
+	check(HUD);
+	HUD->CharacterHUDWidget->HealthProgressBar->SetPercent(
+		AttributeSet->Health.GetCurrentValue() / AttributeSet->Health.GetBaseValue());
+	HUD->CharacterHUDWidget->StaminaProgressBar->SetPercent(
+		AttributeSet->Stamina.GetCurrentValue() / AttributeSet->Stamina.GetBaseValue());
 }
 
 void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
