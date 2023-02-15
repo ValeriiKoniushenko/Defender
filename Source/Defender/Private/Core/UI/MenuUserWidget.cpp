@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "Components/Button.h"
+#include "Components/EditableText.h"
 #include "Components/WidgetSwitcher.h"
 
 #pragma warning(push)
@@ -34,9 +35,9 @@ void UMenuUserWidget::NativeConstruct()
 	
 	check(LanButton);
 	LanButton->OnClicked.AddDynamic(this, &UMenuUserWidget::OnLan);
-
-	check(OnlineButton);
-	OnlineButton->OnClicked.AddDynamic(this, &UMenuUserWidget::OnOnline);
+	
+	check(LanConnectButton);
+	LanConnectButton->OnClicked.AddDynamic(this, &UMenuUserWidget::OnLanConnect);
 	
 	GetWorld()->GetFirstPlayerController()->bShowMouseCursor = true;
 
@@ -46,7 +47,11 @@ void UMenuUserWidget::NativeConstruct()
 
 void UMenuUserWidget::OnStartGame()
 {
-	UGameplayStatics::OpenLevel(this, FName("TestMap"), false);
+	if (GetWorld())
+	{
+		GetWorld()->ServerTravel("/Game/Defender/Maps/TestMap?listen");
+		PlayAnimation(GoLeftButtons);
+	}
 }
 
 void UMenuUserWidget::OnMultiplayer()
@@ -102,6 +107,11 @@ void UMenuUserWidget::OnBackToMainMenu()
 void UMenuUserWidget::OnLan()
 {
 	
+}
+
+void UMenuUserWidget::OnLanConnect()
+{
+	UGameplayStatics::OpenLevel(GetWorld(),  FName(LanIP->GetText().ToString()));
 }
 
 void UMenuUserWidget::OnOnline()

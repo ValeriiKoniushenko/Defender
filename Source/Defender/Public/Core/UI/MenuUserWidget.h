@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "MenuUserWidget.generated.h"
 
+class UEditableText;
 class UWidgetSwitcher;
 class UButton;
 /**
@@ -37,6 +38,9 @@ protected:
 	
 	UFUNCTION()
 	void OnLan();
+	
+	UFUNCTION()
+	void OnLanConnect();
 	
 	UFUNCTION()
 	void OnOnline();
@@ -80,4 +84,11 @@ protected:
 	
 	UPROPERTY(Transient, meta=(BindWidget))
 	UButton* OnlineButton;
+
+	// Multiplayer:Lan Menu
+	UPROPERTY(Transient, meta=(BindWidget))
+	UButton* LanConnectButton;
+
+	UPROPERTY(Transient, meta=(BindWidget))
+	UEditableText* LanIP;
 };

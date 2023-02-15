@@ -38,15 +38,15 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	float GetDirection() const;
 
-	UFUNCTION(BlueprintCallable)
-	void LoadFromDataTable();
+	// UFUNCTION(BlueprintCallable)
+	// void LoadFromDataTable();
 
 	UFUNCTION()
 	void UpdateStatusBar();
 	
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
-	UDataTable* ConfigTable;
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
+	// UDataTable* ConfigTable;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
 	UBaseCharacterAttributeSet* AttributeSet;

@@ -30,14 +30,20 @@ ABaseCharacter::ABaseCharacter()
 
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 
-	ConfigTable = CreateDefaultSubobject<UDataTable>(TEXT("Config"));
+	// ConfigTable = CreateDefaultSubobject<UDataTable>(TEXT("Config"));
+
+	AttributeSet->Health.SetBaseValue(100.f);
+	AttributeSet->Health.SetCurrentValue(100.f);
+
+	AttributeSet->Stamina.SetBaseValue(100.f);
+	AttributeSet->Stamina.SetCurrentValue(100.f);
 }
 
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	LoadFromDataTable();
+	// LoadFromDataTable();
 }
 
 void ABaseCharacter::Tick(float DeltaTime)
@@ -64,7 +70,7 @@ float ABaseCharacter::GetDirection() const
 	return ACos * Sign;
 }
 
-void ABaseCharacter::LoadFromDataTable()
+/*void ABaseCharacter::LoadFromDataTable()
 {
 	if (!ConfigTable)
 	{
@@ -86,7 +92,7 @@ void ABaseCharacter::LoadFromDataTable()
 			AttributeSet->Stamina.SetCurrentValue(Data->BaseValue);
 		}
 	}
-}
+}*/
 
 void ABaseCharacter::UpdateStatusBar()
 {
