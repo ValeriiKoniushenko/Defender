@@ -6,6 +6,9 @@ public class Defender : ModuleRules
 {
 	public Defender(ReadOnlyTargetRules Target) : base(Target)
 	{
+		MinFilesUsingPrecompiledHeaderOverride = 1;
+		bFasterWithoutUnity = true;
+
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicDependencyModuleNames.AddRange(new[]
@@ -15,7 +18,10 @@ public class Defender : ModuleRules
 			"Engine",
 			"InputCore",
 			"HeadMountedDisplay",
-			"UMG"
+			"UMG",
+			"OnlineSubsystem",
+			"OnlineSubsystemUtils",
+			"OnlineSubsystemSteam"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new[]
@@ -29,6 +35,8 @@ public class Defender : ModuleRules
 			"InputCore",
 			"HeadMountedDisplay"
 		});
+		
+		DynamicallyLoadedModuleNames.Add("OnlineSubsystemNull");
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

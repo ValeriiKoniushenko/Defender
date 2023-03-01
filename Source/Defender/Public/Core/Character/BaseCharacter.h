@@ -3,8 +3,9 @@
 #include "AbilitySystemInterface.h"
 #include "Core/Character/BaseCharacterAttributeSet.h"
 #include "CoreMinimal.h"
-#include "Engine/DataTable.h"
+// #include "Engine/DataTable.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/OnlineSessionInterface.h"
 
 #include "BaseCharacter.generated.h"
 
@@ -32,6 +33,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void ToggleGameMenu();
+
 	UFUNCTION(BlueprintCallable)
 	float GetSpeed() const;
 
@@ -43,11 +46,11 @@ protected:
 
 	UFUNCTION()
 	void UpdateStatusBar();
-	
+
 protected:
 	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
 	// UDataTable* ConfigTable;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
 	UBaseCharacterAttributeSet* AttributeSet;
 

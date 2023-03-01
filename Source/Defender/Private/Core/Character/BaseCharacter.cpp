@@ -5,6 +5,7 @@
 #include "Core/Controllers/BasePlayerController.h"
 #include "Core/UI/BaseHUD.h"
 #include "Core/UI/CharacterHUDWidget.h"
+#include "Core/UI/GameMenuUserWidget.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -44,6 +45,12 @@ void ABaseCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	// LoadFromDataTable();
+}
+
+void ABaseCharacter::ToggleGameMenu()
+{
+	ABaseHUD* HUD = UGameplayStatics::GetPlayerController(this, 0)->GetHUD<ABaseHUD>();
+	GetWorld()->GetFirstPlayerController()->bShowMouseCursor = HUD->ToggleMenu();
 }
 
 void ABaseCharacter::Tick(float DeltaTime)
@@ -121,6 +128,7 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	                                 &ABasePlayerController::SecondaryAction);
 	PlayerInputComponent->BindAction("ToggleCouch", IE_Pressed, CurrentController, &ABasePlayerController::StartCrouch);
 	PlayerInputComponent->BindAction("ToggleCouch", IE_Released, CurrentController, &ABasePlayerController::EndCrouch);
+	PlayerInputComponent->BindAction("ToggleGameMenu", IE_Pressed, this, &ThisClass::ToggleGameMenu);
 }
 
 void ABaseCharacter::Jump()

@@ -4,8 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Core/Multiplayer/MainGameSession.h"
+
 #include "MenuUserWidget.generated.h"
 
+class UTableWidget;
+class UCanvasPanel;
 class UEditableText;
 class UWidgetSwitcher;
 class UButton;
@@ -35,16 +39,26 @@ protected:
 
 	UFUNCTION()
 	void OnBackToMainMenu();
-	
+
 	UFUNCTION()
 	void OnLan();
-	
+
 	UFUNCTION()
 	void OnLanConnect();
-	
+
 	UFUNCTION()
 	void OnOnline();
 
+	UFUNCTION()
+	void OnBackToMultiplayerButtonFromLan();
+
+	UFUNCTION()
+	void OnUpdateOnlineTable();
+
+protected:
+	UFUNCTION()
+	void OnFoundSessionResult(TArray<FSearchResult> SearchResults);
+	
 protected:
 	UPROPERTY(meta=(BindWidget))
 	UWidgetSwitcher* MenuSwitcher;
@@ -78,10 +92,10 @@ protected:
 	// Multiplayer Menu
 	UPROPERTY(Transient, meta=(BindWidget))
 	UButton* BackToMainMenuButtonFromMultiplayer;
-	
+
 	UPROPERTY(Transient, meta=(BindWidget))
 	UButton* LanButton;
-	
+
 	UPROPERTY(Transient, meta=(BindWidget))
 	UButton* OnlineButton;
 
@@ -91,4 +105,17 @@ protected:
 
 	UPROPERTY(Transient, meta=(BindWidget))
 	UEditableText* LanIP;
+
+	UPROPERTY(Transient, meta=(BindWidget))
+	UButton* BackToMultiplayerButtonFromLan;
+
+	// Multiplayer:Online Menu
+	UPROPERTY(Transient, meta=(BindWidget))
+	UTableWidget* TableWidget;
+
+	UPROPERTY(Transient, meta=(BindWidget))
+	UButton* BackToMultiplayerButtonFromOnline;
+
+	UPROPERTY(Transient, meta=(BindWidget))
+	UButton* UpdateOnlineTable;
 };

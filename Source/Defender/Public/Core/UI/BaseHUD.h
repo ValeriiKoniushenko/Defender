@@ -8,6 +8,7 @@
 #include "BaseHUD.generated.h"
 
 class UCharacterHUDWidget;
+class UGameMenuUserWidget;
 class UUserWidget;
 
 UCLASS()
@@ -18,10 +19,16 @@ class DEFENDER_API ABaseHUD : public AHUD
 public:
 	virtual void BeginPlay() override;
 
+	bool ToggleMenu();
+
 	UUserWidget* CrosshairWidget;
 	UCharacterHUDWidget* CharacterHUDWidget;
+	UGameMenuUserWidget* GameMenuUserWidget;
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=UI)
+	TSubclassOf<UGameMenuUserWidget> GameMenuUserWidgetClass;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=UI)
 	TSubclassOf<UUserWidget> CrosshairWidgetClass;
 
