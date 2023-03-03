@@ -7,7 +7,6 @@ public class Defender : ModuleRules
 	public Defender(ReadOnlyTargetRules Target) : base(Target)
 	{
 		MinFilesUsingPrecompiledHeaderOverride = 1;
-		bFasterWithoutUnity = true;
 
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 

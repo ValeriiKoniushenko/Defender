@@ -30,6 +30,8 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -38,6 +40,7 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	float GetSpeed() const;
 
+protected:
 	UFUNCTION(BlueprintCallable)
 	float GetDirection() const;
 
