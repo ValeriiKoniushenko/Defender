@@ -3,6 +3,17 @@
 #include "Core/Character/BaseCharacter.h"
 #include "GameFramework/Character.h"
 
+void ABasePlayerController::AcknowledgePossession(APawn* P)
+{
+	Super::AcknowledgePossession(P);
+
+	ABaseCharacter* CharacterBase = Cast<ABaseCharacter>(P);
+	if (CharacterBase)
+	{
+		CharacterBase->GetAbilitySystemComponent()->InitAbilityActorInfo(CharacterBase, CharacterBase);
+	}
+}
+
 void ABasePlayerController::MoveForward(float Value)
 {
 	ACharacter* CurrentCharacter = GetCharacter();

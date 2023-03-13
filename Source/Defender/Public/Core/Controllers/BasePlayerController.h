@@ -12,6 +12,8 @@ class DEFENDER_API ABasePlayerController : public APlayerController
 {
 	GENERATED_BODY()
 public:
+	virtual void AcknowledgePossession(APawn* P) override;
+	
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void LookAround(float Value);

@@ -3,13 +3,15 @@
 #include "Camera/CameraComponent.h"
 #include "Components/ProgressBar.h"
 #include "Core/Controllers/BasePlayerController.h"
+#include "Core/Inventory/WeaponInventoryComponent.h"
+#include "Core/Pickup/BasePickup.h"
 #include "Core/UI/BaseHUD.h"
 #include "Core/UI/CharacterHUDWidget.h"
 #include "Core/UI/GameMenuUserWidget.h"
+#include "Core/Weapon/BaseWeapon.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Core/Pickup/BasePickup.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogBaseCharacter, All, All);
 
@@ -28,23 +30,28 @@ ABaseCharacter::ABaseCharacter()
 	check(CameraComponent);
 	CameraComponent->AttachToComponent(SpringArmComponent, {EAttachmentRule::KeepRelative, false});
 
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbiltySystemComponent"));
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+
 	AttributeSet = CreateDefaultSubobject<UBaseCharacterAttributeSet>(TEXT("Attribute Set"));
 
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 
 	// ConfigTable = CreateDefaultSubobject<UDataTable>(TEXT("Config"));
 
-	AttributeSet->Health.SetBaseValue(100.f);
-	AttributeSet->Health.SetCurrentValue(100.f);
 
-	AttributeSet->Stamina.SetBaseValue(100.f);
-	AttributeSet->Stamina.SetCurrentValue(100.f);
+	WeaponInventoryComponent = CreateDefaultSubobject<UWeaponInventoryComponent>(TEXT("WeaponInventoryComponent"));
+
+	bReplicates = true;
 }
 
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxWalkSpeedAttribute()).
+	                        AddUObject(this, &ThisClass::OnMaxWalkSpeedChanged);
 	// LoadFromDataTable();
 }
 
@@ -61,9 +68,50 @@ void ABaseCharacter::Tick(float DeltaTime)
 	UpdateStatusBar();
 }
 
+void ABaseCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+
+	InitializeAttributes();
+	GiveAbilities();
+
+	SetOwner(NewController);
+}
+
 float ABaseCharacter::GetSpeed() const
 {
 	return GetVelocity().Size2D();
+}
+
+void ABaseCharacter::InitializeAttributes()
+{
+	if (AbilitySystemComponent && DefaultAttributeEffect)
+	{
+		FGameplayEffectContextHandle EffectContextHandle = AbilitySystemComponent->MakeEffectContext();
+		EffectContextHandle.AddSourceObject(this);
+
+		FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(
+			DefaultAttributeEffect, 1, EffectContextHandle);
+
+		if (SpecHandle.IsValid())
+		{
+			FActiveGameplayEffectHandle GEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(
+				*SpecHandle.Data.Get());
+		}
+	}
+}
+
+void ABaseCharacter::GiveAbilities()
+{
+	if (HasAuthority() && AbilitySystemComponent)
+	{
+		for (TSubclassOf<UGameplayAbility>& Ability : DefaultAbilities)
+		{
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability, 1, INDEX_NONE, this));
+		}
+	}
 }
 
 float ABaseCharacter::GetDirection() const
@@ -76,6 +124,16 @@ float ABaseCharacter::GetDirection() const
 	float Sign = FMath::Sign(FVector::CrossProduct(Velocity, ForwardVector).Z);
 
 	return ACos * Sign;
+}
+
+bool ABaseCharacter::ActivateAbilitiesByTag(FGameplayTagContainer GameplayTagContainer, bool bAllowedRemoteActivation)
+{
+	if (AbilitySystemComponent)
+	{
+		return AbilitySystemComponent->TryActivateAbilitiesByTag(GameplayTagContainer, bAllowedRemoteActivation);
+	}
+
+	return false;
 }
 
 /*void ABaseCharacter::LoadFromDataTable()
@@ -127,8 +185,9 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("MainAction", IE_Pressed, CurrentController, &ABasePlayerController::MainAction);
 	PlayerInputComponent->BindAction("SecondaryAction", IE_Pressed, CurrentController,
 	                                 &ABasePlayerController::SecondaryAction);
-	PlayerInputComponent->BindAction("ToggleCouch", IE_Pressed, CurrentController, &ABasePlayerController::StartCrouch);
-	PlayerInputComponent->BindAction("ToggleCouch", IE_Released, CurrentController, &ABasePlayerController::EndCrouch);
+	PlayerInputComponent->BindAction("ToggleCrouch", IE_Pressed, CurrentController,
+	                                 &ABasePlayerController::StartCrouch);
+	PlayerInputComponent->BindAction("ToggleCrouch", IE_Released, CurrentController, &ABasePlayerController::EndCrouch);
 	PlayerInputComponent->BindAction("ToggleGameMenu", IE_Pressed, this, &ThisClass::ToggleGameMenu);
 }
 
@@ -161,6 +220,35 @@ void ABaseCharacter::NotifyActorBeginOverlap(AActor* OtherActor)
 
 	if (ABasePickup* BasePickup = Cast<ABasePickup>(OtherActor))
 	{
-		BasePickup->Pickup();
+		BasePickup->Pickup(this);
 	}
+}
+
+void ABaseCharacter::SpawnWeapon(TSubclassOf<ABaseWeapon> WeaponClass)
+{
+	if (UWorld* World = GetWorld())
+	{
+		CurrentWeapon = WeaponInventoryComponent->GetWeapon(WeaponInventoryComponent->CountOfWeapons() - 1);
+		if (CurrentWeapon)
+		{
+			CurrentWeapon->AttachToComponent(GetMesh(), {EAttachmentRule::SnapToTarget, false}, TEXT("WeaponSocket"));
+		}
+	}
+}
+
+void ABaseCharacter::AddWeaponToInventory(TSubclassOf<ABaseWeapon> WeaponClass, const FWeaponSettings& WeaponSettings)
+{
+	ABaseWeapon* AddedWeapon = WeaponInventoryComponent->AddWeapon(GetWorld()->SpawnActor<ABaseWeapon>(WeaponClass));
+	if (WeaponInventoryComponent->CountOfWeapons() == 1)
+	{
+		SpawnWeapon(WeaponClass);
+	}
+
+	AddedWeapon->Settings = WeaponSettings;
+}
+
+void ABaseCharacter::OnMaxWalkSpeedChanged(const FOnAttributeChangeData& OnAttributeChangeData)
+{
+	UE_LOG(LogTemp, Warning, TEXT("%f"), OnAttributeChangeData.NewValue);
+	GetCharacterMovement()->MaxWalkSpeed = OnAttributeChangeData.NewValue;
 }

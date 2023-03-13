@@ -38,7 +38,7 @@ public:
 	void Show();
 
 	UFUNCTION(BlueprintCallable)
-	virtual void Pickup();
+	virtual void Pickup(ABaseCharacter* BaseCharacter);
 	
 protected:
 	void Spawn();

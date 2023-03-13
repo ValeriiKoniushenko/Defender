@@ -33,7 +33,7 @@ void ABasePickup::Show()
 	InteractSphere->SetCollisionResponseToAllChannels(ECR_Overlap);
 }
 
-void ABasePickup::Pickup()
+void ABasePickup::Pickup(ABaseCharacter* BaseCharacter)
 {
 	Hide();
 
