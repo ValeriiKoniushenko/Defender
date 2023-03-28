@@ -5,9 +5,14 @@
 
 #include "Core/Character/BaseCharacter.h"
 
+UCharacterJogAbility::UCharacterJogAbility()
+{
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("character.moving.jog")));
+}
+
 void UCharacterJogAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-	const FGameplayEventData* TriggerEventData)
+                                           const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+                                           const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
@@ -23,7 +28,7 @@ void UCharacterJogAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 
 			if (SpecHandle.IsValid())
 			{
-				ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, SpecHandle);
+				AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 			}
 		}
 	}

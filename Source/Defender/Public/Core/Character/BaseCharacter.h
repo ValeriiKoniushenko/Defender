@@ -43,6 +43,8 @@ public:
 protected:
 	void OnMaxWalkSpeedChanged(const FOnAttributeChangeData& OnAttributeChangeData);
 
+	void OnAddedOrRemovedTag(FGameplayTag GameplayTag, int I);
+	
 	virtual void BeginPlay() override;
 
 	virtual void ToggleGameMenu();

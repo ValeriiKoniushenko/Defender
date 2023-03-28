@@ -5,6 +5,11 @@
 
 #include "Core/Character/BaseCharacter.h"
 
+UCharacterRunAbility::UCharacterRunAbility()
+{
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("character.moving.run")));
+}
+
 void UCharacterRunAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
    const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
    const FGameplayEventData* TriggerEventData)
@@ -23,7 +28,7 @@ void UCharacterRunAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 
 			if (SpecHandle.IsValid())
 			{
-				ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, SpecHandle);
+				AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 			}
 		}
 	}

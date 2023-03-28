@@ -40,7 +40,6 @@ ABaseCharacter::ABaseCharacter()
 
 	// ConfigTable = CreateDefaultSubobject<UDataTable>(TEXT("Config"));
 
-
 	WeaponInventoryComponent = CreateDefaultSubobject<UWeaponInventoryComponent>(TEXT("WeaponInventoryComponent"));
 
 	bReplicates = true;
