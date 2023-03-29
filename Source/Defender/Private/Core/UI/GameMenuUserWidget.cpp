@@ -57,7 +57,12 @@ void UGameMenuUserWidget::OnBackToMenu()
 	}
 }
 
+#pragma warning(push)
+#pragma warning(disable: 4996)
+
 void UGameMenuUserWidget::OnBackToDesktop()
 {
 	GIsRequestingExit = true;
 }
+
+#pragma warning(pop)
