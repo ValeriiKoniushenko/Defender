@@ -21,6 +21,11 @@ public:
 	void Jump();
 	void MainAction();
 	void SecondaryAction();
-	void StartCrouch();
-	void EndCrouch();
+	void StartRun();
+	void EndRun();
+	void StartWalk();
+	void EndWalk();
+
+private:
+	void ActivateCharacterAbilityByTag(FName TagName);
 };

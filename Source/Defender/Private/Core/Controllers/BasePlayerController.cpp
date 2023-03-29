@@ -3,6 +3,8 @@
 #include "Core/Character/BaseCharacter.h"
 #include "GameFramework/Character.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogABasePlayerController, All, All)
+
 void ABasePlayerController::AcknowledgePossession(APawn* P)
 {
 	Super::AcknowledgePossession(P);
@@ -77,20 +79,36 @@ void ABasePlayerController::SecondaryAction()
 	}
 }
 
-void ABasePlayerController::StartCrouch()
+void ABasePlayerController::StartRun()
 {
-	ACharacter* CurrentCharacter = GetCharacter();
-	if (CurrentCharacter)
-	{
-		CurrentCharacter->Crouch();
-	}
+	ActivateCharacterAbilityByTag("character.moving.run");
 }
 
-void ABasePlayerController::EndCrouch()
+void ABasePlayerController::EndRun()
 {
-	ACharacter* CurrentCharacter = GetCharacter();
-	if (CurrentCharacter)
+	ActivateCharacterAbilityByTag("character.moving.jog");
+}
+
+void ABasePlayerController::StartWalk()
+{
+	ActivateCharacterAbilityByTag("character.moving.walk");
+}
+
+void ABasePlayerController::EndWalk()
+{
+	ActivateCharacterAbilityByTag("character.moving.jog");
+}
+
+void ABasePlayerController::ActivateCharacterAbilityByTag(FName TagName)
+{
+	if (const ABaseCharacter* BaseCharacter = Cast<ABaseCharacter>(GetCharacter()))
 	{
-		CurrentCharacter->UnCrouch();
+		FGameplayTagContainer GameplayTagContainer;
+		GameplayTagContainer.AddTag(FGameplayTag::RequestGameplayTag(TagName));
+		
+		if (!BaseCharacter->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(GameplayTagContainer))
+		{
+			UE_LOG(LogABasePlayerController, Error, TEXT("Can't activate ability: %s - maybe you forget to add this ability to ASC in a class."), *GameplayTagContainer.GetByIndex(0).ToString());
+		}
 	}
 }

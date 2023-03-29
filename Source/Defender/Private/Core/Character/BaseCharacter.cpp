@@ -125,16 +125,6 @@ float ABaseCharacter::GetDirection() const
 	return ACos * Sign;
 }
 
-bool ABaseCharacter::ActivateAbilitiesByTag(FGameplayTagContainer GameplayTagContainer, bool bAllowedRemoteActivation)
-{
-	if (AbilitySystemComponent)
-	{
-		return AbilitySystemComponent->TryActivateAbilitiesByTag(GameplayTagContainer, bAllowedRemoteActivation);
-	}
-
-	return false;
-}
-
 /*void ABaseCharacter::LoadFromDataTable()
 {
 	if (!ConfigTable)
@@ -184,10 +174,11 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	PlayerInputComponent->BindAction("MainAction", IE_Pressed, CurrentController, &ABasePlayerController::MainAction);
 	PlayerInputComponent->BindAction("SecondaryAction", IE_Pressed, CurrentController,
 	                                 &ABasePlayerController::SecondaryAction);
-	PlayerInputComponent->BindAction("ToggleCrouch", IE_Pressed, CurrentController,
-	                                 &ABasePlayerController::StartCrouch);
-	PlayerInputComponent->BindAction("ToggleCrouch", IE_Released, CurrentController, &ABasePlayerController::EndCrouch);
 	PlayerInputComponent->BindAction("ToggleGameMenu", IE_Pressed, this, &ThisClass::ToggleGameMenu);
+	PlayerInputComponent->BindAction("Run", IE_Pressed, CurrentController, &ABasePlayerController::StartRun);
+	PlayerInputComponent->BindAction("Run", IE_Released, CurrentController, &ABasePlayerController::EndRun);
+	PlayerInputComponent->BindAction("Walk", IE_Pressed, CurrentController, &ABasePlayerController::StartWalk);
+	PlayerInputComponent->BindAction("Walk", IE_Released, CurrentController, &ABasePlayerController::EndWalk);
 }
 
 void ABaseCharacter::Jump()
@@ -248,6 +239,5 @@ void ABaseCharacter::AddWeaponToInventory(TSubclassOf<ABaseWeapon> WeaponClass, 
 
 void ABaseCharacter::OnMaxWalkSpeedChanged(const FOnAttributeChangeData& OnAttributeChangeData)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%f"), OnAttributeChangeData.NewValue);
 	GetCharacterMovement()->MaxWalkSpeed = OnAttributeChangeData.NewValue;
 }

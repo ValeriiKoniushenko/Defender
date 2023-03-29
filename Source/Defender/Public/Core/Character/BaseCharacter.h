@@ -42,8 +42,6 @@ public:
 
 protected:
 	void OnMaxWalkSpeedChanged(const FOnAttributeChangeData& OnAttributeChangeData);
-
-	void OnAddedOrRemovedTag(FGameplayTag GameplayTag, int I);
 	
 	virtual void BeginPlay() override;
 
@@ -61,10 +59,7 @@ protected:
 
 	// UFUNCTION(BlueprintCallable)
 	// void LoadFromDataTable();
-
-	UFUNCTION(BlueprintCallable)
-	bool ActivateAbilitiesByTag(FGameplayTagContainer GameplayTagContainer, bool bAllowedRemoteActivation);
-
+	
 	UFUNCTION()
 	void UpdateStatusBar();
 
