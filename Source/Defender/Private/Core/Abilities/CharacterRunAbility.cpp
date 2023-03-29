@@ -5,6 +5,8 @@
 
 #include "Core/Character/BaseCharacter.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogUCharacterRunAbility, All, All)
+
 UCharacterRunAbility::UCharacterRunAbility()
 {
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("character.moving.run")));
@@ -30,6 +32,18 @@ void UCharacterRunAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 			{
 				AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 			}
+			else
+			{
+				UE_LOG(LogUCharacterRunAbility, Error, TEXT("Can't create Outgoing Spec handle"));
+			}
 		}
+		else
+		{
+			UE_LOG(LogUCharacterRunAbility, Error, TEXT("Can't get an ability system component from an actor info"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogUCharacterRunAbility, Error, TEXT("RunEffect in NULL. Set RunEffect throug the blueprint class"));
 	}
 }

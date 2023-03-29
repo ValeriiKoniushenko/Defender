@@ -5,6 +5,8 @@
 
 #include "Core/Character/BaseCharacter.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogUCharacterJogAbility, All, All)
+
 UCharacterJogAbility::UCharacterJogAbility()
 {
 	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("character.moving.jog")));
@@ -30,6 +32,18 @@ void UCharacterJogAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 			{
 				AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 			}
+			else
+			{
+				UE_LOG(LogUCharacterJogAbility, Error, TEXT("Can't create Outgoing Spec handle"));
+			}
 		}
+		else
+		{
+			UE_LOG(LogUCharacterJogAbility, Error, TEXT("Can't get an ability system component from an actor info"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogUCharacterJogAbility, Error, TEXT("JogEffect in NULL. Set JogEffect throug the blueprint class"));
 	}
 }
