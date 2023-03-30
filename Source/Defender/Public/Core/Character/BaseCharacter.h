@@ -37,9 +37,6 @@ public:
 
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 
-	void SpawnWeapon(TSubclassOf<ABaseWeapon> WeaponClass);
-	virtual void AddWeaponToInventory(TSubclassOf<ABaseWeapon> WeaponClass, const FWeaponSettings& WeaponSettings);
-
 protected:
 	void OnMaxWalkSpeedChanged(const FOnAttributeChangeData& OnAttributeChangeData);
 	
@@ -67,8 +64,8 @@ protected:
 	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
 	// UDataTable* ConfigTable;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Inventory)
-	ABaseWeapon* CurrentWeapon;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName HandSocket;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Inventory)
 	UWeaponInventoryComponent* WeaponInventoryComponent;

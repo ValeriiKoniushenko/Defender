@@ -7,7 +7,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogBaseWeapon, All, All);
 
 UWeaponInventoryComponent::UWeaponInventoryComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = true;		
 }
 
 void UWeaponInventoryComponent::BeginPlay()

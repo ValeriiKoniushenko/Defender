@@ -4,7 +4,7 @@
 #include "Components/ProgressBar.h"
 #include "Core/Controllers/BasePlayerController.h"
 #include "Core/Inventory/WeaponInventoryComponent.h"
-#include "Core/Pickup/BasePickup.h"
+#include "Core/Pickup/BasePickUp.h"
 #include "Core/UI/BaseHUD.h"
 #include "Core/UI/CharacterHUDWidget.h"
 #include "Core/UI/GameMenuUserWidget.h"
@@ -12,7 +12,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
-
+	
 DEFINE_LOG_CATEGORY_STATIC(LogBaseCharacter, All, All);
 
 ABaseCharacter::ABaseCharacter()
@@ -207,34 +207,24 @@ UAbilitySystemComponent* ABaseCharacter::GetAbilitySystemComponent() const
 void ABaseCharacter::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-
-	if (ABasePickup* BasePickup = Cast<ABasePickup>(OtherActor))
+	if (ABasePickUp* BasePickUp = Cast<ABasePickUp>(OtherActor))
 	{
-		BasePickup->Pickup(this);
-	}
-}
-
-void ABaseCharacter::SpawnWeapon(TSubclassOf<ABaseWeapon> WeaponClass)
-{
-	if (UWorld* World = GetWorld())
-	{
-		CurrentWeapon = WeaponInventoryComponent->GetWeapon(WeaponInventoryComponent->CountOfWeapons() - 1);
-		if (CurrentWeapon)
+		if (UWorld* World = GetWorld())
 		{
-			CurrentWeapon->AttachToComponent(GetMesh(), {EAttachmentRule::SnapToTarget, false}, TEXT("WeaponSocket"));
+			if (BasePickUp->SpawnedActor)
+			{
+				AActor* SpawnedActor = World->SpawnActor(BasePickUp->SpawnedActor);
+				if (!SpawnedActor->AttachToComponent(GetMesh(), { EAttachmentRule::SnapToTarget, false }, HandSocket))
+				{
+					UE_LOG(LogBaseCharacter, Error, TEXT("Can't attach a picked up actor to the hand socket"));
+				}
+			}
+			else
+			{
+				UE_LOG(LogBaseCharacter, Error, TEXT("Can't create a picked up actor. It has no a specified class to spawn 'SpawnedActor'"));
+			}
 		}
 	}
-}
-
-void ABaseCharacter::AddWeaponToInventory(TSubclassOf<ABaseWeapon> WeaponClass, const FWeaponSettings& WeaponSettings)
-{
-	ABaseWeapon* AddedWeapon = WeaponInventoryComponent->AddWeapon(GetWorld()->SpawnActor<ABaseWeapon>(WeaponClass));
-	if (WeaponInventoryComponent->CountOfWeapons() == 1)
-	{
-		SpawnWeapon(WeaponClass);
-	}
-
-	AddedWeapon->Settings = WeaponSettings;
 }
 
 void ABaseCharacter::OnMaxWalkSpeedChanged(const FOnAttributeChangeData& OnAttributeChangeData)
